@@ -30,3 +30,19 @@ def classify0(inX,dataSet,labels,k):    #inX是目标值位置，dataSet是array
     #排序
     sortedClassCount = sorted(classCount.iteritems(),key=operator.itemgetter(1),reverse=True)#自带的字典排序功能
     return sortedClassCount[0][0]   #返回的是二维数组第一个，因为前面排序是将key和键值进行了分开然后排序，形成了二维数组
+
+#read file data
+def file2matrix(filename):
+    fr = open(filename)
+    arrayOfLines = fr.readlines()
+    numberOfLines = len(arrayOfLines)
+    returnMat = zeros((numberOfLines,3))    #取零的几行几列数组
+    classLabelVector = []
+    index =0
+    for line in arrayOfLines
+        line = line.strip()
+        listFromLine = line.split('\t') #按tab进行分割
+        returnMat[index,:] = listFromLine[0:3]
+        classLabelVector.append(int(listFromLine[-1]))
+        index +=1
+    return returnMat,classLabelVector
