@@ -11,7 +11,7 @@ def createDataSet():
 
 #分类器
 def classify0(inX,dataSet,labels,k):    #inX是目标值位置，dataSet是array数组测试样本，labels是结果标签,k是取前几个
-    dataSetSize = dataSet.shap[0]   #返回列数
+    dataSetSize = dataSet.shape[0]   #返回列数
 
     #距离的计算
     diffMat = tile(inX,(dataSetSize,1))-dataSet #把目标值变成dataSetSize列的二维数组，然后将两者相减，准备求距离
@@ -24,7 +24,7 @@ def classify0(inX,dataSet,labels,k):    #inX是目标值位置，dataSet是array
     classCount = {} 
     for i in range(k):
         voteIlabel = labels[sortedDistIndicies[i]]  #从索引中拿样本结果标签
-        classCount[voteIlabel] = classCount.get(voteIlable,0)+1 #从字典中通过key来找到个数，然后加1
+        classCount[voteIlabel] = classCount.get(voteIlabel,0)+1 #从字典中通过key来找到个数，然后加1
 
 
     #排序
