@@ -46,3 +46,42 @@ def file2matrix(filename):
         classLabelVector.append(listFromLine[-1])  #将末尾的目标值放入单独的分类vector
         index +=1
     return returnMat,classLabelVector
+
+#添加归一化特征值
+def autoNorm(dataSet):
+    minVals = dataSet.min(0)
+    maxVals = dataSet.max(0)
+    ranges = maxVals - minVals
+    normDataSet = zeros(shape(dataSet))  #按照dataSet的维度来建立零矩阵
+    m = dataSet.shape[0]
+    normDataSet = dataSet - tile(minVals,(m,1)) #往y轴方向复制m行
+    normDataSet = normDataSet/tile(ranges,(m,1))    #这是范围值矩阵
+    return normDataSet,ranges,minVals
+
+#分类器针对约会网站的测试代码
+def datingClassTest():
+    hoRatio = 0.10
+    datingDataMat,datingLabels = file2matrix('datingTestSet.txt')
+    normMat,ranges,minVals = autoNorm(datingDataMat)
+    m = normMat.shape[0]
+    numTestVecs = int(m*hoRatio)
+    errorCount = 0.0
+    for i in range(numTestVecs):
+        #是将10%的测试数据作为目标值，求每行目标值与实际值最相近的距离，并取出结果。如果最相近的值与结果值不同，那么就是错误值
+        classifierResult = classify0(normMat[i,:],normMat[numTestVecs:m,:],datingLabels[numTestVecs:m],3)
+        print "the classifier came back with:%s,the real answer is: %s " % (classifierResult,datingLabels[i])
+        if (classifierResult!=datingLabels[i]):
+            errorCount +=1.0
+        print "the total error rate is: %f" %(errorCount/float(numTestVecs))
+
+#构建系统化的应用
+def classifyPerson():
+    resultList = ['not at all','n small doses','in large doses']
+    percentTats = float(raw_input("percentage of time spent playing video games?"))
+    ffMiles = float(raw_input("frequen flier miles earned per year?"))
+    iceCream = float(raw_input("liters of ice cream consumed per year?"))
+    datingDataMat,datingLabels = file2matrix('datingTestSet.txt')
+    normMat,ranges,minVals= autoNorm(datingDataMat)
+    inArr = array([ffMiles,percentTats,iceCream])
+    classifierResult = classify0((inArr-minVals)/ranges,normMat,datingLabels,3) #测试目标值也需要归一化
+    print("You will probably like this person:%s" % classifierResult)
