@@ -39,10 +39,10 @@ def file2matrix(filename):
     returnMat = zeros((numberOfLines,3))    #取零的几行几列数组
     classLabelVector = []
     index =0
-    for line in arrayOfLines
+    for line in arrayOfLines :
         line = line.strip()
         listFromLine = line.split('\t') #按tab进行分割
-        returnMat[index,:] = listFromLine[0:3]
-        classLabelVector.append(int(listFromLine[-1]))
+        returnMat[index,:] = listFromLine[0:3]  #将一行的list数据放入矩阵的每行当中
+        classLabelVector.append(listFromLine[-1])  #将末尾的目标值放入单独的分类vector
         index +=1
     return returnMat,classLabelVector
