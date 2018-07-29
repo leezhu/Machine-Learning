@@ -85,3 +85,45 @@ def classifyPerson():
     inArr = array([ffMiles,percentTats,iceCream])
     classifierResult = classify0((inArr-minVals)/ranges,normMat,datingLabels,3) #测试目标值也需要归一化
     print("You will probably like this person:%s" % classifierResult)
+
+
+
+
+#识别系统代码添加
+#图像元素转矩阵
+def img2vector(filename):
+    returnVect =zeros((1,1024))
+    fr = open(filename)
+    for i in range(32):
+        lineStr = fr.readline()
+        for j in range(32):
+            returnVect[0,32*i+j]=int(lineStr[j])    #0行，为了按32*32二维来存一维的
+    return returnVect
+
+
+#手写数字识别系统的测试代码
+def handwritingClassTest():
+    hwLabels=[]
+    trainingFileList = listdir('traningDigits')
+    m = len(traningFileList)    #获取个数
+    for i in range(m):
+        fileNameStr=trainingFileList[i]
+        fileStr = fileNameStr.split('.')[0] #将文件名拆分，取其名称
+        classNumStr = int(fileStr.split('_')[0])    #取文件序号,就是识别的号码
+        hwLabels.append(classNumStr)
+        trainingMat[i,:]=img2vector('trainingDigits/%s' % fileNameStr)
+    testFileList = listdir('testDigits')
+    errorCount=0.0
+    mTest = len(testFileList)
+    #对测试集也做处理
+    for i in range(mTest):
+        fileNameStr = testFileList[i]
+        fileStr = fileNameStr.split('.')[0]
+        classNumStr = int(fileStr.split('_')[0])
+        vectorUnderTest = img2vector('testDigits/%s' % fileNameStr)
+        classifierResult = classify0(vectorUnderTest,trainingMat,hwLabels,3)
+        print "the classifier came back with:%d,the real answer is:%d" % (classifierResult,classNumStr)
+        if (classifierResult != classNumStr):
+            errorCount +=1.0
+    print "\nthe total number of errors is:%d" % errorCount
+    print "\nthe total error rate is:%f" % (errorCount/float(mTest))
