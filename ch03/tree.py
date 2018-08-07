@@ -1,0 +1,60 @@
+#encoding=utf-8
+"""
+计算给定数据集的熵，这是测试了解信息增益
+"""
+from math import log
+
+#计算熵
+def calcShannonEnt(dataSet):
+    numEntries = len(dataSet)   #矩阵的行数
+    labelCounts ={}
+    for featVec in dataSet:
+        currentLabel = featVec[-1]  #取最后一个分类标签
+        if currentLabel not in labelCounts.keys():
+            labelCounts[currentLabel]=0
+        labelCounts[currentLabel] +=1
+    shannonEnt = 0.0
+    for key in labelCounts:
+        prob = float(labelCounts[key])/numEntries   #按个数进行求概率
+        shannonEnt -=prob*log(prob,2)   #直接求熵，
+    return shannonEnt
+
+#划分数据集，将第axis列中含有value值得其余列内容划分出来
+def split_dataset(dataset,axis,value) :
+    """
+    :param axis 列
+           value 列中取值
+    """
+    ret_dataset = {}
+    for feat_vec in dataset :
+        if feat_vec[axis] == value :
+            reduced_feat_vec = feat_vec[:axis]  
+            reduced_feat_vec.extend(feat_vec[axis+1:])
+            ret_dataset.append(reduced_feat_vec)
+    return ret_dataset
+        
+
+#数据集建立
+def createDataSet():
+    dataSet = [[1,1,'yes'],[1,1,'yes'],[1,0,'no'],[0,1,'no'],[0,1,'no']]
+    labels = ['no surfacing','flippers']
+    return dataSet,labels
+
+def chose_best_feature_split(data_set) :
+    num_feature = len(data_set[0]) -1   #看列数，除去分类值列
+    base_entropy = calcShannonEnt(data_set)
+    best_info_gain = 0.0
+    best_feature = -1
+    for i in range(num_feature) :
+        feature_list = [example[i] for example in data_set] #取第i列内容
+        unique_vals = set(feature)
+        new_entropy = 0.0
+        for values in unique_vals :
+            sub_dataset = split_dataset(data_set,i,values)
+            prob = len(sub_dataset)/float(len(dataset)))
+            new_entropy += prob*calcShnnonEnt(sub_dataset)
+        info_gain = base_entropy - new_entropy
+        if (info_gain > best_info_gain) :
+            best_info_gain = info_gain
+            best_feature = i
+    return best_feature
