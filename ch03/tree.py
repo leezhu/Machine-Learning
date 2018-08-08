@@ -2,6 +2,7 @@
 """
 计算给定数据集的熵，这是测试了解信息增益
 """
+import operator
 from math import log
 
 #计算熵
@@ -66,8 +67,7 @@ def majority_cnt(class_list) :
         if vote not in class_count.keys() :
             class_count[vote] = 0
         class_count[vote] += 1
-    sorted_class_count = sorted(class_count.iteritems(),key = operator.itemgetter(1),
-            reverse=True)   #成为一个二维数组
+    sorted_class_count = sorted(class_count.iteritems(),key = operator.itemgetter(1),reverse=True)   #成为一个二维数组
     return sorted_class_count[0][0]
 
 #创建树
@@ -79,11 +79,26 @@ def create_tree(data_set,labels) :
         return majority_cnt(class_list)
     best_feat = chose_best_feature_split(data_set)
     best_feat_label = labels[best_feat]
-    my_tree = {best_feature:{}}
+    my_tree = {best_feat_label:{}}
     del(labels[best_feat])
-    feat_vals = [example[best_feat] for exmaple in data_set]
+    feat_vals = [example[best_feat] for example in data_set]
     unique_vals = set(feat_vals)
-    for value in unique :
-        sub_labels = labels[:]
-        my_tree[best_feat_label[value] = creat_tree(split_dataset(data_set,best_feat,value),sub_label)
+    for value in unique_vals :
+        sub_label = labels[:]
+        my_tree[best_feat_label][value] = create_tree(split_dataset(data_set,best_feat,value),sub_label)
     return my_tree
+
+#使用决策树进行分类
+def classify(input_tree,feat_labels,test_vec) :
+    first_str = input_tree.keys()[0]
+    second_dict = input_tree[first_str]
+    feat_index = feat_labels.index(first_str)
+    class_label = ''
+    for key in second_dict.keys():
+        print "key=%s"%key
+        if test_vec[feat_index] == int(key) :    
+            if type(second_dict[key]).__name__ == 'dict' : #看是否为叶子节点
+                class_label = classify(second_dict,feat_labels,test_vec)
+            else :
+                class_label = second_dict[key]
+    return class_label
